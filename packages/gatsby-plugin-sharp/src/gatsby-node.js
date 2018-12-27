@@ -1,6 +1,18 @@
-const { setBoundActionCreators, setPluginOptions } = require(`./index`)
+exports.onPreInit = ({ actions, reporter }, pluginOptions) => {
+  try {
+    require(`sharp`)
+  } catch (error) {
+    // Bail early if sharp isn't working
+    // TODO: Add link to docs
+    reporter.panic(
+      `
+      "sharp" doesn't seem to have been built or installed correctly
+      `
+    )
+  }
 
-exports.onPreInit = ({ actions }, pluginOptions) => {
+  const { setBoundActionCreators, setPluginOptions } = require(`./index`)
+
   setBoundActionCreators(actions)
   setPluginOptions(pluginOptions)
 }
