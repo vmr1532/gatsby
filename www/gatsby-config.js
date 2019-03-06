@@ -2,6 +2,40 @@ require(`dotenv`).config({
   path: `.env.${process.env.NODE_ENV}`,
 })
 
+const { google } = require(`googleapis`)
+const path = require(`path`)
+const fs = require(`fs`)
+
+const GA = {
+  identifier: `UA-93349937-5`,
+  viewId: `142357465`,
+}
+
+const dynamicPlugins = []
+if (process.env.ANALYTICS_SERVICE_ACCOUNT) {
+  // authclient is needed for CI as we can't open the oauth page and request credentials.
+  const authClient = new google.auth.JWT({
+    email: process.env.ANALYTICS_SERVICE_ACCOUNT,
+    key: fs.readFileSync(path.join(__dirname, `key.pem`), `utf8`),
+    scopes: [`https://www.googleapis.com/auth/analytics.readonly`],
+  })
+
+  // pick data from 3 months ago
+  const startDate = new Date()
+  startDate.setMonth(startDate.getMonth() - 3)
+  dynamicPlugins.push({
+    resolve: `gatsby-plugin-guess-js`,
+    options: {
+      GAViewID: GA.viewId,
+      jwt: authClient,
+      period: {
+        startDate,
+        endDate: new Date(),
+      },
+    },
+  })
+}
+
 module.exports = {
   siteMetadata: {
     title: `GatsbyJS`,
@@ -114,7 +148,7 @@ module.exports = {
     {
       resolve: `gatsby-plugin-google-analytics`,
       options: {
-        trackingId: `UA-93349937-5`,
+        trackingId: GA.identifier,
         anonymize: true,
       },
     },
@@ -196,16 +230,5 @@ module.exports = {
       },
     },
     `gatsby-plugin-subfont`,
-    // {
-    // resolve: `gatsby-plugin-guess-js`,
-    // options: {
-    // GAViewID: `142357465`,
-    // // The "period" for fetching analytic data.
-    // period: {
-    // startDate: new Date(`2018-1-1`),
-    // endDate: new Date(),
-    // },
-    // },
-    // },
-  ],
+  ].concat(dynamicPlugins),
 }
