@@ -40,6 +40,18 @@ GATSBY_FEEDBACK_KEY_STARTERLIB=ADD_KEY
 
 If there's a problem with the feedback widgets, please open an issue in the repo.
 
+### Working with guess.js
+
+To enable Guess.js you'll need to have access to gatsbyjs.org analytics service account. Guess needs a key file and a service account.
+
+If you have access to the keys and service account, add them like:
+
+```
+ANALYTICS_SERVICE_ACCOUNT=ADD_KEY
+```
+
+Save the key.pem file inside the www root.
+
 ## Running slow build? (Screenshots placeholder)
 
 If you are not working on starter or site showcase, it might be beneficial to use a placeholder image instead of actual screenshots. It will skip downloading screenshots and generating responsive images for all screenshots and replace them with a placeholder image.
